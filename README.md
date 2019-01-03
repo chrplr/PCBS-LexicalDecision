@@ -15,10 +15,10 @@ The word stimuli are nouns and verbs of varying lexical frequencies (frequencies
 - [Lexical Decision Experiment](#lexical-decision-experiment)
     - [Preparation of the stimuli](#preparation-of-the-stimuli)
         - [Words](#words)
-    - [b.to_csv('lexique382-reduced.txt', sep='\t', index=False)](#btocsvlexique382-reducedtxt-sept-indexfalse)
-    - [verbs_hi.sample(N).ortho.to_csv('verlo.txt', index=False)](#verbshisamplenorthotocsvverlotxt-indexfalse)
-    - [Pseudowords](#pseudowords)
+        - [Pseudowords](#pseudowords)
+    - [Experimental list](#experimental-list)
     - [Experiment](#experiment)
+    - [CONCLUSION](#conclusion)
 
 <!-- markdown-toc end -->
 
