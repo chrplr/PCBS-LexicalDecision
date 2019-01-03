@@ -30,48 +30,48 @@ The word stimuli are nouns and verbs of varying lexical frequencies (frequencies
 We obtained a list of French words from <http://lexique.org>, downloading <http://www.lexique.org/public/Lexique382.zip> and unzipping it. Our first step was to reduce the number of columns to make it easier to handle the database. 
 To this end, we wrote the script `reduce-lexique.py`:
 
----
-# reduce-lexique.py
-""" Extracts some columns from Lexique382.txt """
 
-import pandas as pd
+    # reduce-lexique.py
+    """ Extracts some columns from Lexique382.txt """
 
-a = pd.read_csv('Lexique382.txt', sep='\t')
+    import pandas as pd
 
-b = a[['1_ortho', '4_cgram', '15_nblettres', '9_freqfilms2']].rename(columns={
-    '1_ortho': 'ortho',
-    '4_cgram': 'categ',
-    '15_nblettres': 'length',
-    '9_freqfilms2':'freq'})
+    a = pd.read_csv('Lexique382.txt', sep='\t')
 
-b.to_csv('lexique382-reduced.txt', sep='\t', index=False)
----
+    b = a[['1_ortho', '4_cgram', '15_nblettres', '9_freqfilms2']].rename(columns={
+       '1_ortho': 'ortho',
+       '4_cgram': 'categ',
+       '15_nblettres': 'length',
+       '9_freqfilms2':'freq'})
+
+    b.to_csv('lexique382-reduced.txt', sep='\t', index=False)
+
 
 Then, we selected 4 subsets of nouns and verbs, of length comprosed between 5 and 8, with the following script (`select-word-from-lexique.py`):
 
----
-import pandas as pd
 
-lex = pd.read_csv("lexique382-reduced.txt", sep='\t')
+    import pandas as pd
 
-subset = lex.loc[(lex.length >= 5) & (lex.length <=8)]
+    lex = pd.read_csv("lexique382-reduced.txt", sep='\t')
 
-noms = subset.loc[subset.categ == 'NOM']
-verbs = subset.loc[subset.categ == 'VER']
+    subset = lex.loc[(lex.length >= 5) & (lex.length <=8)]
 
-noms_hi = noms.loc[noms.freq > 50.0]
-noms_low = noms.loc[(noms.freq < 10.0) & (noms.freq > 1.0)]
+    noms = subset.loc[subset.categ == 'NOM']
+    verbs = subset.loc[subset.categ == 'VER']
 
-verbs_hi = verbs.loc[verbs.freq > 50.0]
-verbs_low = verbs.loc[(verbs.freq < 10.0) & (verbs.freq > 1.0)]
+    noms_hi = noms.loc[noms.freq > 50.0]
+    noms_low = noms.loc[(noms.freq < 10.0) & (noms.freq > 1.0)]
 
-N = 20
+    verbs_hi = verbs.loc[verbs.freq > 50.0]
+    verbs_low = verbs.loc[(verbs.freq < 10.0) & (verbs.freq > 1.0)]
 
-noms_hi.sample(N).ortho.to_csv('nomhi.txt', index=False)
-noms_low.sample(N).ortho.to_csv('nomlo.txt', index=False)
-verbs_hi.sample(N).ortho.to_csv('verhi.txt', index=False)
-verbs_hi.sample(N).ortho.to_csv('verlo.txt', index=False)
----
+    N = 20
+
+    noms_hi.sample(N).ortho.to_csv('nomhi.txt', index=False)
+    noms_low.sample(N).ortho.to_csv('nomlo.txt', index=False)
+    verbs_hi.sample(N).ortho.to_csv('verhi.txt', index=False)
+    verbs_hi.sample(N).ortho.to_csv('verlo.txt', index=False)
+
 
 This yielded 4 lists in four files:
 
@@ -79,37 +79,31 @@ This yielded 4 lists in four files:
 
 
 
-## Pseudowords
+### Pseudowords
 
 Then, to create 80 pseudowords, we used the lexique toolbox pseudoword generator (<http://www.lexique.org/toolbox/toolbox.pub/index.php?page=non_mot>), feeding it with the words generated at the previous step.
 
 We obtained 80 pseudowords, listed in the file `pseudomots.txt`
 
-## Experimental listed
+## Experimental list
 
 Importing the files `nomhi.txt  nomlo.txt  verhi.txt  verlo.txt and pseudomots.txt` into Openoffice Calc, we created a csv file `stimuli.csv`, with 3 columns:
 
----
-$ head stimuli.csv
-Category,Frequency,Item
-NOUN,HIFREQ,ordres
-NOUN,HIFREQ,reste
-NOUN,HIFREQ,couteau
-NOUN,HIFREQ,poisson
-NOUN,HIFREQ,courant
-NOUN,HIFREQ,boulot
-NOUN,HIFREQ,position
-NOUN,HIFREQ,reine
-NOUN,HIFREQ,choix
-...
----
+
+    $ head stimuli.csv
+    Category,Frequency,Item
+    NOUN,HIFREQ,ordres
+    NOUN,HIFREQ,reste
+    NOUN,HIFREQ,couteau
+    NOUN,HIFREQ,poisson
+    ...
 
 
 ## Experiment
 
-the script to run the experiment uses the module expyriment.
+The script to run the experiment uses the module expyriment.
 
----
+```{python}
 """ Implementation of a lexical decision experiment. """ 
 
 import random
@@ -171,7 +165,8 @@ for t in trials:
     exp.data.add([cat, freq, t.get_factor("Item"), button, ok, rt])
 
 expyriment.control.end()
----
+```
+
 
 
 ## CONCLUSION
