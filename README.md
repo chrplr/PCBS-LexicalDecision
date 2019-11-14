@@ -101,72 +101,29 @@ Importing the files `nomhi.txt  nomlo.txt  verhi.txt  verlo.txt and pseudomots.t
 
 ## Experiment
 
-The script to run the experiment uses the module expyriment.
+The script [lexical_decision.py](lexical_decision.py) to run the experiment uses the module [expyriment](www.epxyriment.org).
 
-```{python}
-""" Implementation of a lexical decision experiment. """ 
+First, a list of trials is created, one for each row of `stimuli.csv`. Each trial contains a single stimulus, which is a `TextLine` containing the letter string to be displayed.
 
-import random
-import csv
-import expyriment
+The list is randomized with `random.shuffle`.
 
+Then the experiment starts. After the presentation of the stimulus, the scritps waits for a response key press, and then saved all the relevant information.
 
-STIM_FILE = 'stimuli.csv'
-WORD_RESP = expyriment.misc.constants.K_j
-NONWORD_RESP = expyriment.misc.constants.K_f
-MAX_RESP_TIME = 2500
-ITI = 1500
+The results are stored in `data/lexical_decision*.xpd` files, with on file per subject. The xpd file is a csv file which can be imported in Excel, R or Python with pandas.
 
-exp = expyriment.design.Experiment(name="Lexical Decision Task") 
-
-expyriment.control.initialize(exp)
-
-trials = []
-
-## Load the stimuli
-with open(STIM_FILE, encoding="utf-8") as f:
-    r = csv.reader(f)
-    next(r)  # skip header line
-    for row in r:
-        cat, freq, item = row[0], row[1], row[2]
-        trial = expyriment.design.Trial()
-        trial.add_stimulus(expyriment.stimuli.TextLine(item))
-        trial.set_factor("Category", cat)
-        trial.set_factor("Frequency", freq)
-        trial.set_factor("Item", item)
-        trials.append(trial)
-
-random.shuffle(trials)
-
-exp.add_data_variable_names(['key', 'rt'])
-
-## Run the experiment
-expyriment.control.start()
-
-expyriment.stimuli.TextScreen("Instructions", """You will see a series of written stimuli displayed at the center of the screen.
-
-After each stimulus, your task is to press the right key ('J') if you think it is an existing word, the left key ('F') otherwise. Place now your index fingers on the keys 'F' and 'J'.
-
-Press the spacebar when you are ready to start.""").present()
-
-exp.keyboard.wait_char(' ')
-exp.screen.clear()
-exp.screen.update()
-
-for t in trials:
-    exp.clock.wait(ITI - t.stimuli[0].preload())
-    t.stimuli[0].present()
-    button, rt = exp.keyboard.wait([WORD_RESP, NONWORD_RESP],
-                                   duration=MAX_RESP_TIME)
-    exp.screen.clear()
-    exp.screen.update()
-    cat, freq = t.get_factor("Category"), t.get_factor("Frequency")
-    ok = ((button == WORD_RESP) and (cat != 'PSEUDO')) or ((button == NONWORD_RESP) and (cat == 'PSEUDO'))
-    exp.data.add([cat, freq, t.get_factor("Item"), button, ok, rt])
-
-expyriment.control.end()
-```
-
+~~~
+subject_id,categ,freq,item,key,rt,ok
+6,VERB,HIFREQ,savais,102,928,False
+6,PSEUDO,NA,brontai,102,1070,True
+6,NOUN,LOFREQ,florin,106,751,True
+6,PSEUDO,NA,fetreme,102,683,True
+6,PSEUDO,NA,chétinct,102,662,True
+6,PSEUDO,NA,protemci,102,656,True
+6,VERB,LOFREQ,protéger,106,554,True
+6,PSEUDO,NA,chlourbe,102,628,True
+6,PSEUDO,NA,ébirial,102,998,True
+6,VERB,LOFREQ,laissez,106,753,True
+~~~
 
 
 ## CONCLUSION
