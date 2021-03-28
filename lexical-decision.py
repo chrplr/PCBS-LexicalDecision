@@ -1,14 +1,20 @@
 #! /usr/bin/env python
-# Time-stamp: <2021-03-28 22:20:14 christophe@pallier.org>
+
+# Time-stamp: <2021-03-28 23:05:38 christophe@pallier.org>
+
+""" Lexical decision experiment.
+
+The experiment consists in a series of trials. In each trial, a letter string stimulus is displayed a thte center of the screen. The participant must press a button as quickly as possible to indicate if it is word or not.
+"""
 
 import random
 import csv
 from expyriment import design, control, stimuli, misc
 
 
-WORD_RESP = misc.constants.K_j
-NONWORD_RESP = misc.constants.K_f
-MAX_RESP_TIME = 2500
+WORD_RESP = misc.constants.K_j  # key for WORD response
+NONWORD_RESP = misc.constants.K_f  # key for NONWORD response
+MAX_RESP_TIME = 2500 # deadline for response time (msec)
 ITI = 1500  # inter trial interval
 BUZZER = 'wrong-answer.ogg'
 
@@ -16,9 +22,9 @@ def show_instructions():
     stimuli.TextScreen("Instructions",
                        """You will see a sequence of written stimuli.
 
-                       After each stimulus, your task is to press the right key ('J') if you think it is an existing word, the left key ('F') otherwise. Place now your index fingers on the keys 'F' and 'J'.
+    After each stimulus, your task is to press the right key ('J') if you think it is an existing word, the left key ('F') otherwise. Place now your index fingers on the keys 'F' and 'J'.
 
-                       Press the SPACE BAR to start.""").present()
+    Press the SPACE BAR to start.""").present()
     exp.keyboard.wait_char(' ')
 
 
@@ -37,6 +43,7 @@ with open('stimuli.csv', 'r') as f:
         trial.add_stimulus(stimuli.TextLine(item))
         trial.set_factor("Category", cat)
         trial.set_factor("Frequency", freq)
+        print(cat, freq)
         trial.set_factor("Item", item)
         trials.append(trial)
 
@@ -46,9 +53,8 @@ negative_feedback = stimuli.Audio(BUZZER)
 
 exp.add_data_variable_names(['category','frequency','item','response_key', 'rt', 'is_correct'])
 
-
 # Run the experiment
-control.start(skip_ready=True)
+control.start()
 
 show_instructions()
 
@@ -61,7 +67,6 @@ for t in trials:
 
     button, rt = exp.keyboard.wait([WORD_RESP, NONWORD_RESP],
                                    duration=MAX_RESP_TIME)
-
     cat = t.get_factor("Category")
     freq = t.get_factor("Frequency")
 

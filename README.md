@@ -59,6 +59,7 @@ Importing the files `nomhi.txt  nomlo.txt  verhi.txt  verlo.txt and pseudomots.t
 
 ## Experiment
 
+<<<<<<< HEAD
 To run the experiment:
 
     python lexical-decision.py
@@ -89,7 +90,3 @@ category             1.0  0.012364  0.012364  0.779794  0.379989
 frequency:category   1.0  0.020338  0.020338  1.282675  0.260963
 Residual            76.0  1.205025  0.015856       NaN       NaN
 ```
-
-
-
-
