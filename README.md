@@ -11,7 +11,6 @@ The word stimuli are nouns and verbs of varying lexical frequencies (frequencies
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
-- [Lexical Decision Experiment](#lexical-decision-experiment)
     - [Preparation of the stimuli](#preparation-of-the-stimuli)
         - [Words](#words)
         - [Pseudowords](#pseudowords)
@@ -26,15 +25,13 @@ The word stimuli are nouns and verbs of varying lexical frequencies (frequencies
 
 ### Words
 
-To get lexial frequency information, we used the [Lexique database](http://www.lexique.org). More precisely, we used the table `Lexique383.tsv` available at 'http://www.lexique.org/databases/Lexique383/Lexique383.tsv'
+To get lexical frequency information, we used the [Lexique database](http://www.lexique.org). More precisely, we used the table `Lexique383.tsv` available at <http://www.lexique.org/databases/Lexique383/Lexique383.tsv>
 
 From this table we randomly selected four subsets of nouns and verbs, of length comprosed between 5 and 8 letters. The code to select the materials is in the script (`select-word-from-lexique.py`), which must be ran with:
 
      python select_word_from_lexique.py 
 
-to yield 4 lists of 20 items, saved in four files:
-
-    nomhi.txt  nomlo.txt  verhi.txt  verlo.txt
+which yielded 4 four files (`nomhi.txt,  nomlo.txt,  verhi.txt` and `verlo.txt``) containing 20 items each.
 
 
 ### Pseudowords
