@@ -3,7 +3,7 @@ Lexical Decision Experiment
 
 The aim of this project was to create a psycholinguistics experiment implementing a lexical decision task in the visual modality. 
 
-The experiment consists in a succession of trials in which a written stimulus is displayed on the screen and the participant must indicate, by pressing one of two response buttons, if this stimulus is a word or not. The response time is recorded. 
+The experiment consists in a succession of trials in which a written stimulus is displayed on the screen and the participant must indicate, by pressing one of two response keys, if this stimulus is a word or not. The response time is recorded. 
 
 The word stimuli are nouns and verbs of varying lexical frequencies (frequencies of occurrence in the language) to allow us to assess the influences of these two factors (Category: noun vs. verb; Frequency: high vs. low) on the speed of word recognition.
 
@@ -17,7 +17,7 @@ The word stimuli are nouns and verbs of varying lexical frequencies (frequencies
         - [Pseudowords](#pseudowords)
     - [Experimental list](#experimental-list)
     - [Experiment](#experiment)
-    - [CONCLUSION](#conclusion)
+    - [Analyze the results](#analyze-the-results)
 
 <!-- markdown-toc end -->
 
@@ -26,13 +26,13 @@ The word stimuli are nouns and verbs of varying lexical frequencies (frequencies
 
 ### Words
 
-We used the database Lexique383 available at 'http://www.lexique.org/databases/Lexique383/Lexique383.tsv'
+To get lexial frequency information, we used the [Lexique database](http://www.lexique.org). More precisely, we used the table `Lexique383.tsv` available at 'http://www.lexique.org/databases/Lexique383/Lexique383.tsv'
 
-We selected 4 subsets of nouns and verbs, of length comprosed between 5 and 8, with the following script (`select-word-from-lexique.py`):
+From this table we randomly selected four subsets of nouns and verbs, of length comprosed between 5 and 8 letters. The code to select the materials is in the script (`select-word-from-lexique.py`), which must be ran with:
 
      python select_word_from_lexique.py 
 
-This yielded 4 lists of 20 items in four files:
+to yield 4 lists of 20 items, saved in four files:
 
     nomhi.txt  nomlo.txt  verhi.txt  verlo.txt
 
