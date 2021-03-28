@@ -1,29 +1,37 @@
-#! /usr/bin/env python3
-# Time-stamp: <2018-11-16 10:48:27 cp983411>
+""" Select low and high frequency nouns and verbs from Lexique382.txt """
 
 import pandas as pd
 
-lex = pd.read_csv("lexique382-reduced.txt", sep='\t')
+LEXIQUE_URL = 'http://www.lexique.org/databases/Lexique383/Lexique383.tsv'
 
-lex.head()
+SUBSET_SIZE = 20  # how many items in each category ((hi,low)*(nouns,verb)) are  needed
 
-subset = lex.loc[(lex.length >= 5) & (lex.length <=8)]
+MIN_N_LETTERS = 5
+MAX_N_LETTERS = 8
 
-noms = subset.loc[subset.categ == 'NOM']
-verbs = subset.loc[subset.categ == 'VER']
+HIGH_FREQUENCY = 50
+LOW_FREQUENCY = 10
+ABS_THR = 1.0  # Absolute minimal threshold
 
-noms_hi = noms.loc[noms.freq > 50.0]
-noms_low = noms.loc[(noms.freq < 10.0) & (noms.freq > 1.0)]
+lexique = pd.read_csv(LEXIQUE_URL, sep='\t')
 
-verbs_hi = verbs.loc[verbs.freq > 50.0]
-verbs_low = verbs.loc[(verbs.freq < 10.0) & (verbs.freq > 1.0)]
+# extract the relevant columns
+lex = lexique[['ortho', 'cgram', 'nblettres', 'freqfilms2']]
 
-N = 20
+# select potential items
+medium_size_words = lex.loc[(lex.nblettres >= MIN_N_LETTERS) & (lex.nblettres <= MAX_N_LETTERS)]
 
-noms_hi.sample(N).ortho.to_csv('nomhi.txt', index=False)
-noms_low.sample(N).ortho.to_csv('nomlo.txt', index=False)
-verbs_hi.sample(N).ortho.to_csv('verhi.txt', index=False)
-verbs_hi.sample(N).ortho.to_csv('verlo.txt', index=False)
+noms = medium_size_words.loc[medium_size_words.cgram == 'NOM']
+verbs = medium_size_words.loc[medium_size_words.cgram == 'VER']
+
+noms_hi = noms.loc[noms.freqfilms2 > HIGH_FREQUENCY]
+noms_low = noms.loc[(noms.freqfilms2 < LOW_FREQUENCY) & (noms.freqfilms2 > ABS_THR)]
+verbs_hi = verbs.loc[verbs.freqfilms2 > HIGH_FREQUENCY]
+verbs_low = verbs.loc[(verbs.freqfilms2 < LOW_FREQUENCY) & (verbs.freqfilms2 > ABS_THR)]
 
 
-
+# extract samples among the potential items and save them in files
+noms_hi.sample(SUBSET_SIZE).ortho.to_csv('nomhi.txt', index=False)
+noms_low.sample(SUBSET_SIZE).ortho.to_csv('nomlo.txt', index=False)
+verbs_hi.sample(SUBSET_SIZE).ortho.to_csv('verhi.txt', index=False)
+verbs_hi.sample(SUBSET_SIZE).ortho.to_csv('verlo.txt', index=False)

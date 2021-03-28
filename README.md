@@ -1,7 +1,6 @@
 Lexical Decision Experiment
 ===========================
 
-
 The aim of this project was to create a psycholinguistics experiment implementing a lexical decision task in the visual modality. 
 
 The experiment consists in a succession of trials in which a written stimulus is displayed on the screen and the participant must indicate, by pressing one of two response buttons, if this stimulus is a word or not. The response time is recorded. 
@@ -27,61 +26,20 @@ The word stimuli are nouns and verbs of varying lexical frequencies (frequencies
 
 ### Words
 
-We obtained a list of French words from <http://lexique.org>, downloading <http://www.lexique.org/public/Lexique382.zip> and unzipping it. Our first step was to reduce the number of columns to make it easier to handle the database. 
-To this end, we wrote the script `reduce-lexique.py`:
+We used the database Lexique383 available at 'http://www.lexique.org/databases/Lexique383/Lexique383.tsv'
 
+We selected 4 subsets of nouns and verbs, of length comprosed between 5 and 8, with the following script (`select-word-from-lexique.py`):
 
-    # reduce-lexique.py
-    """ Extracts some columns from Lexique382.txt """
+     python select_word_from_lexique.py 
 
-    import pandas as pd
-
-    a = pd.read_csv('Lexique382.txt', sep='\t')
-
-    b = a[['1_ortho', '4_cgram', '15_nblettres', '9_freqfilms2']].rename(columns={
-       '1_ortho': 'ortho',
-       '4_cgram': 'categ',
-       '15_nblettres': 'length',
-       '9_freqfilms2':'freq'})
-
-    b.to_csv('lexique382-reduced.txt', sep='\t', index=False)
-
-
-Then, we selected 4 subsets of nouns and verbs, of length comprosed between 5 and 8, with the following script (`select-word-from-lexique.py`):
-
-
-    import pandas as pd
-
-    lex = pd.read_csv("lexique382-reduced.txt", sep='\t')
-
-    subset = lex.loc[(lex.length >= 5) & (lex.length <=8)]
-
-    noms = subset.loc[subset.categ == 'NOM']
-    verbs = subset.loc[subset.categ == 'VER']
-
-    noms_hi = noms.loc[noms.freq > 50.0]
-    noms_low = noms.loc[(noms.freq < 10.0) & (noms.freq > 1.0)]
-
-    verbs_hi = verbs.loc[verbs.freq > 50.0]
-    verbs_low = verbs.loc[(verbs.freq < 10.0) & (verbs.freq > 1.0)]
-
-    N = 20
-
-    noms_hi.sample(N).ortho.to_csv('nomhi.txt', index=False)
-    noms_low.sample(N).ortho.to_csv('nomlo.txt', index=False)
-    verbs_hi.sample(N).ortho.to_csv('verhi.txt', index=False)
-    verbs_hi.sample(N).ortho.to_csv('verlo.txt', index=False)
-
-
-This yielded 4 lists in four files:
+This yielded 4 lists of 20 items in four files:
 
     nomhi.txt  nomlo.txt  verhi.txt  verlo.txt
 
 
-
 ### Pseudowords
 
-Then, to create 80 pseudowords, we used the lexique toolbox pseudoword generator (<http://www.lexique.org/toolbox/toolbox.pub/index.php?page=non_mot>), feeding it with the words generated at the previous step.
+To create 80 pseudowords, we used the lexique toolbox pseudoword generator (<http://www.lexique.org/toolbox/toolbox.pub/index.php?page=non_mot>), feeding it with the words generated at the previous step.
 
 We obtained 80 pseudowords, listed in the file `pseudomots.txt`
 
@@ -101,79 +59,37 @@ Importing the files `nomhi.txt  nomlo.txt  verhi.txt  verlo.txt and pseudomots.t
 
 ## Experiment
 
-The script to run the experiment uses the module expyriment.
+To run the experiment:
 
-```{python}
-""" Implementation of a lexical decision experiment. """ 
+    python lexical-decision.py
+    
+    
+## Analyze the results
 
-import random
-import csv
-import expyriment
+After each run of lexical-decision.py, a new file is created in the `data` folder. It is possible to visualize and analyze the results in a data file by passing it as argument to the script `analyze_lexical_decision.py``. For example:
+
+    python analyze_lexical_decision.py data/lexical-decision_01_202103282213.xpd
 
 
-STIM_FILE = 'stimuli.csv'
-WORD_RESP = expyriment.misc.constants.K_j
-NONWORD_RESP = expyriment.misc.constants.K_f
-MAX_RESP_TIME = 2500
-ITI = 1500
+This generates (for our data) the following graphics, showing the reactions times as a function of Category (Noun vs. Verb) and Lexcal Frequency (High or low)
 
-exp = expyriment.design.Experiment(name="Lexical Decision Task") 
+![](Figure_1.png)
 
-expyriment.control.initialize(exp)
 
-trials = []
+Average Reaction times:
 
-## Load the stimuli
-with open(STIM_FILE, encoding="utf-8") as f:
-    r = csv.reader(f)
-    next(r)  # skip header line
-    for row in r:
-        cat, freq, item = row[0], row[1], row[2]
-        trial = expyriment.design.Trial()
-        trial.add_stimulus(expyriment.stimuli.TextLine(item))
-        trial.set_factor("Category", cat)
-        trial.set_factor("Frequency", freq)
-        trial.set_factor("Item", item)
-        trials.append(trial)
+![](Figure_2.png)
 
-random.shuffle(trials)
+And computes the ANOVA of logRT as a function of Category (Noun vs. Verb) and Lexcal Frequency (High or low):
 
-exp.add_data_variable_names(['key', 'rt'])
-
-## Run the experiment
-expyriment.control.start()
-
-expyriment.stimuli.TextScreen("Instructions", """You will see a series of written stimuli displayed at the center of the screen.
-
-After each stimulus, your task is to press the right key ('J') if you think it is an existing word, the left key ('F') otherwise. Place now your index fingers on the keys 'F' and 'J'.
-
-Press the spacebar when you are ready to start.""").present()
-
-exp.keyboard.wait_char(' ')
-exp.screen.clear()
-exp.screen.update()
-
-for t in trials:
-    exp.clock.wait(ITI - t.stimuli[0].preload())
-    t.stimuli[0].present()
-    button, rt = exp.keyboard.wait([WORD_RESP, NONWORD_RESP],
-                                   duration=MAX_RESP_TIME)
-    exp.screen.clear()
-    exp.screen.update()
-    cat, freq = t.get_factor("Category"), t.get_factor("Frequency")
-    ok = ((button == WORD_RESP) and (cat != 'PSEUDO')) or ((button == NONWORD_RESP) and (cat == 'PSEUDO'))
-    exp.data.add([cat, freq, t.get_factor("Item"), button, ok, rt])
-
-expyriment.control.end()
+```
+                      df    sum_sq   mean_sq         F    PR(>F)
+frequency            1.0  0.004681  0.004681  0.295198  0.588498
+category             1.0  0.012364  0.012364  0.779794  0.379989
+frequency:category   1.0  0.020338  0.020338  1.282675  0.260963
+Residual            76.0  1.205025  0.015856       NaN       NaN
 ```
 
 
-
-## CONCLUSION
-
-It was a lot of work and we did not have time to implement all the thing we wanted to, notably:
-
-* we wanted to write a script to analyse the data files and create a statistical report
-* to include a training phase with feedback before the actual experiment
 
 
