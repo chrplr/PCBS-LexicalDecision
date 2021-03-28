@@ -56,9 +56,14 @@ Importing the files `nomhi.txt  nomlo.txt  verhi.txt  verlo.txt and pseudomots.t
 
 ## Experiment
 
-<<<<<<< HEAD
+To run the experiment on your computer, you must have Python and [Expyriment](htt://expyriment.org) installed.
+
+Download <http://github.com/chrplr/PCBS-LexicalDecision/archive/refs/heads/master.zip> and unzip it. 
+
+
 To run the experiment:
 
+    cd PCBS-LexicalDecision
     python lexical-decision.py
     
     
