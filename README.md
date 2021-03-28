@@ -27,7 +27,7 @@ The word stimuli are nouns and verbs of varying lexical frequencies (frequencies
 
 To get lexical frequency information, we used the [Lexique database](http://www.lexique.org). More precisely, we used the table `Lexique383.tsv` available at <http://www.lexique.org/databases/Lexique383/Lexique383.tsv>
 
-From this table we randomly selected four subsets of nouns and verbs, of length comprosed between 5 and 8 letters. The code to select the materials is in the script (`select-word-from-lexique.py`), which must be ran with:
+From this table we randomly selected four subsets of nouns and verbs, of length comprosed between 5 and 8 letters. The code to select the materials is in the script <https://github.com/chrplr/PCBS-LexicalDecision/blob/master/select-words-from-lexique.py>, to be run with:
 
      python select_word_from_lexique.py 
 
@@ -61,7 +61,7 @@ To run the experiment on your computer, you must have Python and [Expyriment](ht
 Download <http://github.com/chrplr/PCBS-LexicalDecision/archive/refs/heads/master.zip> and unzip it. 
 
 
-To run the experiment:
+To run the []experiment script](https://github.com/chrplr/PCBS-LexicalDecision/blob/master/lexical-decision.py):
 
     cd PCBS-LexicalDecision
     python lexical-decision.py
