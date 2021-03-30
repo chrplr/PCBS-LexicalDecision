@@ -119,7 +119,7 @@ The experiment is ran with the script [run-lexical-decision.py](https://github.c
 
 After each run of `lexical-decision.py`, a file (with extension `.xpd`) is created in the subfolder named `data`. 
 
-It is possible to visualize and analyze the results stored in such file by passing it as argument to the script `analyze_lexical_decision.py`. For example:
+It is possible to visualize and analyze the results stored in such file by passing it as argument to the script [analyze-lexical-decision-times.py](https://github.com/chrplr/PCBS-LexicalDecision/blob/master/analyze-lexical-decision-times.py). For example:
 
     python analyze_lexical_decision-times.py data/lexical-decision_01_202103282213.xpd
 
