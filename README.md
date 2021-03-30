@@ -1,22 +1,21 @@
 Lexical Decision Experiment
 ===========================
 
-The aim of this project was to create a psycholinguistics experiment implementing a lexical decision task in the visual modality. 
+The aim of this project was to create a psycholinguistics experiment implementing a [lexical decision task](https://en.wikipedia.org/wiki/Lexical_decision_task) in the visual modality. 
 
 The experiment consists in a succession of trials in which a written stimulus is displayed on the screen and the participant must indicate, by pressing one of two response keys, if this stimulus is a word or not. The response time is recorded. 
 
-The word stimuli are nouns and verbs of varying lexical frequencies (frequencies of occurrence in the language) to allow us to assess the influences of these two factors (Category: noun vs. verb; Frequency: high vs. low) on the speed of word recognition.
-
+In our experiment, the word stimuli are nouns and verbs of varying lexical frequencies (frequencies of occurrence in the language) to allow us to assess the influences of these two factors (Category: noun vs. verb; Frequency: high vs. low) on the speed of word recognition.
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
-    - [Preparation of the stimuli](#preparation-of-the-stimuli)
+ - [Preparation of the stimuli](#preparation-of-the-stimuli)
         - [Words](#words)
         - [Pseudowords](#pseudowords)
-    - [Experimental list](#experimental-list)
-    - [Experiment](#experiment)
-    - [Analyze the results](#analyze-the-results)
+ - [Experimental list](#experimental-list)
+ - [Experiment](#experiment)
+ - [Analyze the results](#analyze-the-results)
 
 <!-- markdown-toc end -->
 
@@ -25,63 +24,104 @@ The word stimuli are nouns and verbs of varying lexical frequencies (frequencies
 
 ### Words
 
-To get lexical frequency information, we used the [Lexique database](http://www.lexique.org). More precisely, we used the table `Lexique383.tsv` available at <http://www.lexique.org/databases/Lexique383/Lexique383.tsv>
+To get lexical frequency information, we used the [Lexique database](http://www.lexique.org). More precisely, we downloaded the table `Lexique383.tsv` available at <http://www.lexique.org/databases/Lexique383/Lexique383.tsv> (Under Linux, this can be done with the command line `curl -O http://www.lexique.org/databases/Lexique383/Lexique383.tsv`)
 
-From this table we randomly selected four subsets of nouns and verbs, of length comprosed between 5 and 8 letters. The code to select the materials is in the script <https://github.com/chrplr/PCBS-LexicalDecision/blob/master/select-words-from-lexique.py>, to be run with:
+We then randomly selected four subsets of nouns and verbs, of length comprised between 5 and 8 letters. 
+The code to randomly pick items verifying some criteria is in the script [select-words-from-lexique.py](https://github.com/chrplr/PCBS-LexicalDecision/blob/master/select-words-from-lexique.py). We ran it as follows:
 
-     python select_word_from_lexique.py 
 
-which yielded 4 four files (`nomhi.txt,  nomlo.txt,  verhi.txt` and `verlo.txt``) containing 20 items each.
+    mkdir -p stimuli
+
+    python select-words-from-lexique.py -n 20 --cgram NOM --max-freq 5.0 --min-letters 5 --max-letters 8 --database Lexique383.tsv  > stimuli/nomlo.txt
+
+    python select-words-from-lexique.py -n 20 --cgram NOM --min-freq 100.0 --min-letters 5 --max-letters 8 --database Lexique383.tsv > stimuli/nomhi.txt
+
+    python select-words-from-lexique.py -n 20 --cgram VER --max-freq 5.0 --min-letters 5 --max-letters 8 --database Lexique383.tsv  > stimuli/verlo.txt
+
+    python select-words-from-lexique.py -n 20 --cgram VER --min-freq 100.0 --min-letters 5 --max-letters 8 --database Lexique383.tsv > stimuli/verhi.txt
+
+
+
+Thus, the words for the experiment are saved in the files `nomhi.txt`,  `nomlo.txt`,  `verhi.txt` and `verlo.txt` in the subfolder `stimuli/` 
+
+Here is an example of ouput:
+
+nomhi    | nomlo       |verhi        | verlo 
+-------- | ----------- | ----------- | ------------
+façon    |    fleuves  |  avait      |  amènera  
+cause   |    véranda   |  changer |  dégagée   
+bateau   |   vacarme   |  aller   |    envoyons  
+équipe   |   bluff   |    parlé   |    sauterai  
+école   |    lever   |    avons   |    ralenti   
+bureau   |   tarés   |    croyais   |  frustré   
+trucs   |    cobra   |    veulent   |  défiguré  
+lumière   |  samouraï   | trouver   |  extraire  
+besoin   |   mystique   | regardez   | secoué    
+début   |    yacks   |    était   |    brouillé  
+force   |    contes   |   savais   |   tairai    
+reste   |    lézard   |   payer   |    envisage  
+travail   |  boche   |    faisait   |  données   
+homme   |    raton   |    rentrer   |  abrite    
+faute   |    piercing   | ferais   |   apaiser   
+années   |   frayeur   |  parlez   |   bousculé  
+bonjour   |  dérision   | demander   | parleras  
+table   |    citation   | donnez   |   cuits     
+heures   |   entrées   |  parles   |   perdant   
+hommes   |   réforme   |  jouer   |    rallume   
 
 
 ### Pseudowords
 
-To create 80 pseudowords, we used the lexique toolbox pseudoword generator (<http://www.lexique.org/toolbox/toolbox.pub/index.php?page=non_mot>), feeding it with the words generated at the previous step.
+To create 80 pseudowords, we used the [Lexique toolbox' pseudoword generator](http://www.lexique.org/toolbox/toolbox.pub/index.php?page=non_mot), feeding it with the words generated at the previous step.
 
-We obtained 80 pseudowords, listed in the file `pseudomots.txt`
+We obtained 80 pseudowords, that we saved in the file `stimuli/pseudomots.txt`
 
 ## Experimental list
 
-Importing the files `nomhi.txt  nomlo.txt  verhi.txt  verlo.txt and pseudomots.txt` into Openoffice Calc, we created a csv file `stimuli.csv`, with 3 columns:
+With the script [create-experimental-list.py](https://github.com/chrplr/PCBS-LexicalDecision/blob/master/create-experimental-list.py, the files `nomlo.txt`, `nomhi.txt`, `verhi.txt`, `verlo.txt` and `pseudomots.txt` are merged into a single file (`resources/trials.csv`) describing the trials.
 
 
-    $ head stimuli.csv
+    python create-experimental-list.py > resources/trials.csv
+    head resources/trials.csv
     Category,Frequency,Item
-    NOUN,HIFREQ,ordres
-    NOUN,HIFREQ,reste
-    NOUN,HIFREQ,couteau
-    NOUN,HIFREQ,poisson
-    ...
+    NOUN,HIFREQ, façon
+    NOUN,HIFREQ, cause
+    NOUN,HIFREQ, bateau
+    NOUN,HIFREQ, équipe
+    NOUN,HIFREQ, école
+    NOUN,HIFREQ, bureau
+    NOUN,HIFREQ, trucs
+    NOUN,HIFREQ, lumière
+    NOUN,HIFREQ, besoin
 
 
 ## Experiment
 
-To run the experiment on your computer, you must have Python and [Expyriment](htt://expyriment.org) installed.
+To run the experiment on your computer, you must have Python and [Expyriment](http://expyriment.org) installed (as well as the modules listed in [requirements.txt](https://github.com/chrplr/PCBS-LexicalDecision/blob/master/requirement.txt).
 
-Download <http://github.com/chrplr/PCBS-LexicalDecision/archive/refs/heads/master.zip> and unzip it. 
+One installed, you can download <http://github.com/chrplr/PCBS-LexicalDecision/archive/refs/heads/master.zip> and unzip it. 
 
-
-To run the []experiment script](https://github.com/chrplr/PCBS-LexicalDecision/blob/master/lexical-decision.py):
+The experiment is ran with the script [run-lexical-decision.py](https://github.com/chrplr/PCBS-LexicalDecision/blob/master/lexical-decision.py):
 
     cd PCBS-LexicalDecision
-    python lexical-decision.py
-    
-    
+    python run-lexical-decision.py
+      
+
 ## Analyze the results
 
 After each run of lexical-decision.py, a new file is created in the `data` folder. It is possible to visualize and analyze the results in a data file by passing it as argument to the script `analyze_lexical_decision.py``. For example:
 
-    python analyze_lexical_decision.py data/lexical-decision_01_202103282213.xpd
+    python analyze_lexical_decision-times.py data/lexical-decision_01_202103282213.xpd
 
 
-This generates (for our data) the following graphics, showing the reactions times as a function of Category (Noun vs. Verb) and Lexcal Frequency (High or low)
+This generates  the following graphics (with our data), showing the reactions times as a function of Category (Noun vs. Verb) and Lexcal Frequency (High or low)
 
-![](Figure_1.png)
+![](figures/Figure_1.png)
 
 
 Average Reaction times:
 
-![](Figure_2.png)
+![](figures/Figure_2.png)
 
 And computes the ANOVA of logRT as a function of Category (Noun vs. Verb) and Lexcal Frequency (High or low):
 

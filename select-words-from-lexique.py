@@ -1,37 +1,39 @@
-""" Select low and high frequency nouns and verbs from Lexique382.txt """
+#! /usr/bin/env python
+# Time-stamp: <2021-03-30 13:01:24 christophe@pallier.org>
+""" Select items from Lexique382.txt """
 
+import argparse
 import pandas as pd
 
-LEXIQUE_URL = 'http://www.lexique.org/databases/Lexique383/Lexique383.tsv'
+parser = argparse.ArgumentParser(
+    description='Select item from the Lexique database')
+parser.add_argument('-n', type=int, default=10, help='number of items to pick')
+parser.add_argument('--min-letters', type=int, default=3)
+parser.add_argument('--max-letters', type=int, default=8)
+parser.add_argument('--min-freq', type=float, default=1.0)
+parser.add_argument('--max-freq', type=float, default=10000.0)
+parser.add_argument('--cgram', type=str, default='NOM')
+parser.add_argument(
+    '--database',
+    type=str,
+    default='http://www.lexique.org/databases/Lexique383/Lexique383.tsv')
 
-SUBSET_SIZE = 20  # how many items in each category ((hi,low)*(nouns,verb)) are  needed
+args = parser.parse_args()
 
-MIN_N_LETTERS = 5
-MAX_N_LETTERS = 8
+# read lexique and extract the relevant columns
+lex = pd.read_csv(args.database, sep='\t')
 
-HIGH_FREQUENCY = 50
-LOW_FREQUENCY = 10
-ABS_THR = 1.0  # Absolute minimal threshold
+# apply selection criteria
+length_selection = lex.loc[(lex.nblettres >= args.min_letters)
+                           & (lex.nblettres <= args.max_letters)]
 
-lexique = pd.read_csv(LEXIQUE_URL, sep='\t')
+cgram_selection = length_selection.loc[length_selection.cgram == args.cgram]
 
-# extract the relevant columns
-lex = lexique[['ortho', 'cgram', 'nblettres', 'freqfilms2']]
+freq_selection = cgram_selection.loc[
+    (cgram_selection.freqfilms2 >= args.min_freq)
+    & (cgram_selection.freqfilms2 <= args.max_freq)]
 
-# select potential items
-medium_size_words = lex.loc[(lex.nblettres >= MIN_N_LETTERS) & (lex.nblettres <= MAX_N_LETTERS)]
+final_selection = freq_selection.sample(args.n)  # randomly pick n items
 
-noms = medium_size_words.loc[medium_size_words.cgram == 'NOM']
-verbs = medium_size_words.loc[medium_size_words.cgram == 'VER']
-
-noms_hi = noms.loc[noms.freqfilms2 > HIGH_FREQUENCY]
-noms_low = noms.loc[(noms.freqfilms2 < LOW_FREQUENCY) & (noms.freqfilms2 > ABS_THR)]
-verbs_hi = verbs.loc[verbs.freqfilms2 > HIGH_FREQUENCY]
-verbs_low = verbs.loc[(verbs.freqfilms2 < LOW_FREQUENCY) & (verbs.freqfilms2 > ABS_THR)]
-
-
-# extract samples among the potential items and save them in files
-noms_hi.sample(SUBSET_SIZE).ortho.to_csv('nomhi.txt', index=False)
-noms_low.sample(SUBSET_SIZE).ortho.to_csv('nomlo.txt', index=False)
-verbs_hi.sample(SUBSET_SIZE).ortho.to_csv('verhi.txt', index=False)
-verbs_hi.sample(SUBSET_SIZE).ortho.to_csv('verlo.txt', index=False)
+for _, word in final_selection['ortho'].items():
+    print(word)

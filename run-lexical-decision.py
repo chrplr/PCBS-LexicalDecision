@@ -1,10 +1,12 @@
 #! /usr/bin/env python
-
-# Time-stamp: <2021-03-28 23:05:38 christophe@pallier.org>
+# Time-stamp: <2021-03-30 14:06:53 christophe@pallier.org>
+# This code is distributed under the GNU GENERAL PUBLIC LICENSE version 3
 
 """ Lexical decision experiment.
 
-The experiment consists in a series of trials. In each trial, a letter string stimulus is displayed a thte center of the screen. The participant must press a button as quickly as possible to indicate if it is word or not.
+The experiment consists in a series of trials, described in `resources/trials.csv`.
+
+In each trial, a letter string stimulus is displayed a the center of the screen. The participant must press a button as quickly as possible to indicate if it is word or not.
 """
 
 import random
@@ -12,11 +14,13 @@ import csv
 from expyriment import design, control, stimuli, misc
 
 
+TRIALS_INFO = 'resources/trials.csv'
+BUZZER = 'resources/wrong-answer.ogg'
 WORD_RESP = misc.constants.K_j  # key for WORD response
 NONWORD_RESP = misc.constants.K_f  # key for NONWORD response
 MAX_RESP_TIME = 2500 # deadline for response time (msec)
 ITI = 1500  # inter trial interval
-BUZZER = 'wrong-answer.ogg'
+
 
 def show_instructions():
     stimuli.TextScreen("Instructions",
@@ -34,7 +38,7 @@ control.initialize(exp)
 
 ## Load the stimuli
 trials = []
-with open('stimuli.csv', 'r') as f:
+with open(TRIALS_INFO, 'r') as f:
     r = csv.reader(f)
     next(r)  # skip header line
     for row in r:
