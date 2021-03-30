@@ -10,17 +10,14 @@ The experiment consists in a succession of trials in which a written stimulus is
 
 In our experiment, the word stimuli are nouns and verbs of varying lexical frequencies (frequencies of occurrence in the language) to allow us to assess the influences of these two factors (Category: Noun vs. Verb; Frequency: High vs. Low) on the speed of word recognition.
 
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
 - [Preparation of the stimuli](#preparation-of-the-stimuli)
-    * [Words](#words)
-    * [Pseudowords](#pseudowords)
-- [Experimental list](#experimental-list)
-- [Experiment](#experiment)
-- [Analyze the results](#analyze-the-results)
-
-<!-- markdown-toc end -->
+        * [Words](#words)
+        * [Pseudowords](#pseudowords)
+- [Creating the list of trials](#creating-the-list-of-trials)
+- [Running the experiment](#running-the-experiment)
+- [Analyzing the results](#analyzing-the-results)
 
 
 ## Preparation of the stimuli
@@ -79,7 +76,7 @@ To create 80 pseudowords, we used the [Wuggy pseudoword generator](http://crr.ug
 
 We obtained 80 pseudowords, that we saved in the file `stimuli/pseudomots.txt`
 
-## Experimental list
+## Creating the list of trials
 
 Finally, we wrote [create-experimental-list.py](https://github.com/chrplr/PCBS-LexicalDecision/blob/master/create-experimental-list.py) to merge the the files `nomlo.txt`, `nomhi.txt`, `verhi.txt`, `verlo.txt` and `pseudomots.txt` into a single csv file (`resources/trials.csv`) describing the trials.
 
@@ -101,7 +98,7 @@ This file has three columns named Category','Frequency' and 'Item':
     NOUN,HIFREQ, besoin
 
 
-## Experiment
+## Running the experiment
 
 To run the experiment on your computer, you must have Python and the modules listed in [requirements.txt](https://github.com/chrplr/PCBS-LexicalDecision/blob/master/requirement.txt) installed <sup>[1](#conda_install)</sup>
 
@@ -115,7 +112,7 @@ The experiment is ran with the script [run-lexical-decision.py](https://github.c
     python run-lexical-decision.py resources/trials.csv
       
 
-## Analyze the results
+## Analyzing the results
 
 After each run of `lexical-decision.py`, a file (with extension `.xpd`) is created in the subfolder named `data`. 
 
