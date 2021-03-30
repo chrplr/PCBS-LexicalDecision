@@ -1,7 +1,8 @@
 Lexical Decision Experiment
 ===========================
 
-(Note: This document is accessible in a nice format at http://chrplr.github.io/PCBS-LexicalDecision)
+- Main Page:  <http://chrplr.github.io/PCBS-LexicalDecision>
+- Github repository: <https://github.com/chrplr/PCBS-LexicalDecision>
 
 The aim of this project was to create a psycholinguistics experiment implementing a [lexical decision task](https://en.wikipedia.org/wiki/Lexical_decision_task) in the visual modality. 
 
@@ -12,12 +13,12 @@ In our experiment, the word stimuli are nouns and verbs of varying lexical frequ
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
- - [Preparation of the stimuli](#preparation-of-the-stimuli)
-        - [Words](#words)
-        - [Pseudowords](#pseudowords)
- - [Experimental list](#experimental-list)
- - [Experiment](#experiment)
- - [Analyze the results](#analyze-the-results)
+- [Preparation of the stimuli](#preparation-of-the-stimuli)
+    * [Words](#words)
+    * [Pseudowords](#pseudowords)
+- [Experimental list](#experimental-list)
+- [Experiment](#experiment)
+- [Analyze the results](#analyze-the-results)
 
 <!-- markdown-toc end -->
 
@@ -31,16 +32,15 @@ To get lexical frequency information, we used the [Lexique database](http://www.
 We then randomly selected four subsets of nouns and verbs, of length comprised between 5 and 8 letters. 
 The code to randomly pick items verifying some criteria is in the script [select-words-from-lexique.py](https://github.com/chrplr/PCBS-LexicalDecision/blob/master/select-words-from-lexique.py). We ran it as follows:
 
-
     mkdir -p stimuli
-
-    python select-words-from-lexique.py -n 20 --cgram NOM --max-freq 5.0 --min-letters 5 --max-letters 8 --database Lexique383.tsv  > stimuli/nomlo.txt
-
-    python select-words-from-lexique.py -n 20 --cgram NOM --min-freq 100.0 --min-letters 5 --max-letters 8 --database Lexique383.tsv > stimuli/nomhi.txt
-
-    python select-words-from-lexique.py -n 20 --cgram VER --max-freq 5.0 --min-letters 5 --max-letters 8 --database Lexique383.tsv  > stimuli/verlo.txt
-
-    python select-words-from-lexique.py -n 20 --cgram VER --min-freq 100.0 --min-letters 5 --max-letters 8 --database Lexique383.tsv > stimuli/verhi.txt
+    python select-words-from-lexique.py -n 20 --cgram NOM --max-freq 5.0 --min-letters 5     \
+                                        --max-letters 8 --database Lexique383.tsv  > stimuli/nomlo.txt
+    python select-words-from-lexique.py -n 20 --cgram NOM --min-freq 100.0 --min-letters 5   \
+                                        --max-letters 8 --database Lexique383.tsv > stimuli/nomhi.txt
+    python select-words-from-lexique.py -n 20 --cgram VER --max-freq 5.0 --min-letters 5     \
+                                        --max-letters 8 --database Lexique383.tsv  > stimuli/verlo.txt
+    python select-words-from-lexique.py -n 20 --cgram VER --min-freq 100.0 --min-letters 5    \
+                                        --max-letters 8 --database Lexique383.tsv > stimuli/verhi.txt
 
 
 
@@ -117,7 +117,7 @@ It is possible to visualize and analyze the results stored in such file by passi
 
     python analyze_lexical_decision-times.py data/lexical-decision_01_202103282213.xpd
 
-This generates  the following graphics (with our data), showing the reactions times as a function of Category (Noun vs. Verb) and Lexcal Frequency (High or low)
+This generates  the following graphics (with our data), showing the reactions times as a function of Category (Noun vs. Verb) and Lexical Frequency (High or low)
 
 ![](figures/Figure_1.png)
 
