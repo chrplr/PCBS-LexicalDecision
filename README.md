@@ -1,6 +1,8 @@
 Lexical Decision Experiment
 ===========================
 
+(Note: This document is accessible in a nice format at http://chrplr.github.io/PCBS-LexicalDecision)
+
 The aim of this project was to create a psycholinguistics experiment implementing a [lexical decision task](https://en.wikipedia.org/wiki/Lexical_decision_task) in the visual modality. 
 
 The experiment consists in a succession of trials in which a written stimulus is displayed on the screen and the participant must indicate, by pressing one of two response keys, if this stimulus is a word or not. The response time is recorded. 
@@ -72,13 +74,13 @@ hommes   |   réforme   |  jouer   |    rallume
 
 ### Pseudowords
 
-To create 80 pseudowords, we used the [Lexique toolbox' pseudoword generator](http://www.lexique.org/toolbox/toolbox.pub/index.php?page=non_mot), feeding it with the words generated at the previous step.
+To create 80 pseudowords, we used the [Wuggy pseudoword generator](http://crr.ugent.be/programs-data/wuggy), feeding it with the words generated at the previous step.
 
 We obtained 80 pseudowords, that we saved in the file `stimuli/pseudomots.txt`
 
 ## Experimental list
 
-With the script [create-experimental-list.py](https://github.com/chrplr/PCBS-LexicalDecision/blob/master/create-experimental-list.py, the files `nomlo.txt`, `nomhi.txt`, `verhi.txt`, `verlo.txt` and `pseudomots.txt` are merged into a single file (`resources/trials.csv`) describing the trials.
+With the script [create-experimental-list.py](https://github.com/chrplr/PCBS-LexicalDecision/blob/master/create-experimental-list.py), the files `nomlo.txt`, `nomhi.txt`, `verhi.txt`, `verlo.txt` and `pseudomots.txt` are merged into a single file (`resources/trials.csv`) describing the trials.
 
 
     python create-experimental-list.py > resources/trials.csv
