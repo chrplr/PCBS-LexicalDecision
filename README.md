@@ -97,9 +97,9 @@ With the script [create-experimental-list.py](https://github.com/chrplr/PCBS-Lex
 
 ## Experiment
 
-To run the experiment on your computer, you must have Python and [Expyriment](http://expyriment.org) installed (as well as the modules listed in [requirements.txt](https://github.com/chrplr/PCBS-LexicalDecision/blob/master/requirement.txt).
+To run the experiment on your computer, you must have Python and [Expyriment](http://expyriment.org) installed (as well as the modules listed in [requirements.txt](https://github.com/chrplr/PCBS-LexicalDecision/blob/master/requirement.txt), which can be done with the command `pip install -r requirements.txt`)`
 
-One installed, you can download <http://github.com/chrplr/PCBS-LexicalDecision/archive/refs/heads/master.zip> and unzip it. 
+Once Python and the relevant modules are installed, you can download <http://github.com/chrplr/PCBS-LexicalDecision/archive/refs/heads/master.zip> and unzip it. 
 
 The experiment is ran with the script [run-lexical-decision.py](https://github.com/chrplr/PCBS-LexicalDecision/blob/master/lexical-decision.py):
 
@@ -109,10 +109,11 @@ The experiment is ran with the script [run-lexical-decision.py](https://github.c
 
 ## Analyze the results
 
-After each run of lexical-decision.py, a new file is created in the `data` folder. It is possible to visualize and analyze the results in a data file by passing it as argument to the script `analyze_lexical_decision.py``. For example:
+After each run of `lexical-decision.py`, a file (with extension `.xpd`) is created in the subfolder named `data`. 
+
+It is possible to visualize and analyze the results stored in such file by passing it as argument to the script `analyze_lexical_decision.py`. For example:
 
     python analyze_lexical_decision-times.py data/lexical-decision_01_202103282213.xpd
-
 
 This generates  the following graphics (with our data), showing the reactions times as a function of Category (Noun vs. Verb) and Lexcal Frequency (High or low)
 
@@ -123,7 +124,7 @@ Average Reaction times:
 
 ![](figures/Figure_2.png)
 
-And computes the ANOVA of logRT as a function of Category (Noun vs. Verb) and Lexcal Frequency (High or low):
+And computes the ANOVA of logRT as a function of Category (Noun vs. Verb) and Lexical Frequency (High or low):
 
 ```
                       df    sum_sq   mean_sq         F    PR(>F)
