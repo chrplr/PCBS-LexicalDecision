@@ -106,7 +106,7 @@ Once Python and the relevant modules are installed, you can download <http://git
 The experiment is ran with the script [run-lexical-decision.py](https://github.com/chrplr/PCBS-LexicalDecision/blob/master/lexical-decision.py):
 
     cd PCBS-LexicalDecision
-    python run-lexical-decision.py
+    python run-lexical-decision.py resources/trials.csv
       
 
 ## Analyze the results

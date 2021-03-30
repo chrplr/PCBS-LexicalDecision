@@ -1,7 +1,6 @@
 #! /usr/bin/env python
-# Time-stamp: <2021-03-30 14:06:53 christophe@pallier.org>
+# Time-stamp: <2021-03-30 15:49:50 christophe@pallier.org>
 # This code is distributed under the GNU GENERAL PUBLIC LICENSE version 3
-
 """ Lexical decision experiment.
 
 The experiment consists in a series of trials, described in `resources/trials.csv`.
@@ -9,76 +8,92 @@ The experiment consists in a series of trials, described in `resources/trials.cs
 In each trial, a letter string stimulus is displayed a the center of the screen. The participant must press a button as quickly as possible to indicate if it is word or not.
 """
 
+import sys
 import random
-import csv
+import pandas
 from expyriment import design, control, stimuli, misc
 
 
-TRIALS_INFO = 'resources/trials.csv'
-BUZZER = 'resources/wrong-answer.ogg'
-WORD_RESP = misc.constants.K_j  # key for WORD response
-NONWORD_RESP = misc.constants.K_f  # key for NONWORD response
-MAX_RESP_TIME = 2500 # deadline for response time (msec)
-ITI = 1500  # inter trial interval
+WORD_RESPONSE_KEY = misc.constants.K_j
+NONWORD_RESPONSE_KEY = misc.constants.K_f
+NONWORD_CATEGORY = "PSEUDO"
+INTER_TRIAL_INTERVAL = 1500  # delay between two trials
+MAX_RESPONSE_TIME = 2500  # deadline for response time (msec)
+AUDIO_FEEDBACK_FILE_PATH = 'resources/wrong-answer.ogg'
+
+USAGE = """Usage: run-lexical-decision.py FILE
+
+Argument:
+  FILE     :  a csv file with three columns: 'Category', 'Frequency', 'Item'.
+
+Runs a lexical decision experiment presenting the items on by one.
+"""
+
+INSTRUCTIONS = """You will see a sequence of written stimuli.
+
+    When you recognize an existing word, press the 'J' key; otherwise press the 'F' key .
+
+    Try to be as quick as possible (your reaction tims is being measured)...
+
+    ... but without making too many mistakes (a buzzer sound will be played for wrong answers)
+
+    Now, place your index fingers on the keys 'F' (Non-word) and 'J' (Word).
+
+    And press the SPACE BAR to start (To abort the experiment, press ESCAPE).
+"""
+
+#######################################################################
+
+if len(sys.argv) < 2:
+    print(USAGE)
+    sys.exit()
+else:
+    # read a file describing the stimuli
+    trial_stims = pandas.read_csv(sys.argv[1])
+
+    # Check that the file contains the necessary columns
+    assert all([colname in trial_stims.columns for colname in ['Category', 'Frequency', 'Item']])
+
+    # randomize the rows of trial_stims so that the stimuli are presented in a random order
+    trial_stims = trial_stims.sample(frac=1).reset_index(drop=True)
 
 
-def show_instructions():
-    stimuli.TextScreen("Instructions",
-                       """You will see a sequence of written stimuli.
+#######################################################################
+# Prepare the experiment
+exp = design.Experiment(name="Lexical Decision Task", text_size=40)
 
-    After each stimulus, your task is to press the right key ('J') if you think it is an existing word, the left key ('F') otherwise. Place now your index fingers on the keys 'F' and 'J'.
-
-    Press the SPACE BAR to start.""").present()
-    exp.keyboard.wait_char(' ')
-
-
-exp = design.Experiment(name="Lexical Decision Task", text_size=40) 
 
 control.initialize(exp)
 
-## Load the stimuli
-trials = []
-with open(TRIALS_INFO, 'r') as f:
-    r = csv.reader(f)
-    next(r)  # skip header line
-    for row in r:
-        cat, freq, item = row[0], row[1], row[2]
-        trial = design.Trial()
-        trial.add_stimulus(stimuli.TextLine(item))
-        trial.set_factor("Category", cat)
-        trial.set_factor("Frequency", freq)
-        print(cat, freq)
-        trial.set_factor("Item", item)
-        trials.append(trial)
 
-random.shuffle(trials)
+exp.add_data_variable_names(list(trial_stims.columns) + ['response_key', 'rt', 'is_correct'])
 
-negative_feedback = stimuli.Audio(BUZZER)
+negative_feedback = stimuli.Audio(AUDIO_FEEDBACK_FILE_PATH)
 
-exp.add_data_variable_names(['category','frequency','item','response_key', 'rt', 'is_correct'])
-
+###########################################################################
 # Run the experiment
-control.start()
+control.start(skip_ready_screen=True)
 
-show_instructions()
+stimuli.TextScreen("Instructions", INSTRUCTIONS).present()
+exp.keyboard.wait_char(' ')
 
-for t in trials:
+for _, t in trial_stims.iterrows():
     exp.screen.clear()
     exp.screen.update()
 
-    exp.clock.wait(ITI - t.stimuli[0].preload())
-    t.stimuli[0].present()
+    stim = stimuli.TextLine(t.Item)
+    exp.clock.wait(INTER_TRIAL_INTERVAL - stim.preload())
+    stim.present()
 
-    button, rt = exp.keyboard.wait([WORD_RESP, NONWORD_RESP],
-                                   duration=MAX_RESP_TIME)
-    cat = t.get_factor("Category")
-    freq = t.get_factor("Frequency")
+    button, rt = exp.keyboard.wait([WORD_RESPONSE_KEY, NONWORD_RESPONSE_KEY],
+                                   duration=MAX_RESPONSE_TIME)
 
-    is_correct = ((button == WORD_RESP) and (cat != 'PSEUDO')) or \
-                 ((button == NONWORD_RESP) and (cat == 'PSEUDO'))
+    is_correct = ((button == NONWORD_RESPONSE_KEY) and (t.Category == NONWORD_CATEGORY)) or  \
+                 ((button == WORD_RESPONSE_KEY) and (t.Category != NONWORD_CATEGORY))
+
     if not is_correct:
         negative_feedback.play()
 
-    exp.data.add([cat, freq, t.get_factor("Item"), button, rt, is_correct])
+    exp.data.add([t.Category, t.Frequency, t.Item, button, rt, is_correct])
 
 control.end()
