@@ -13,8 +13,8 @@ In our experiment, the word stimuli are nouns and verbs of varying lexical frequ
 **Table of Contents**
 
 - [Preparation of the stimuli](#preparation-of-the-stimuli)
-        * [Words](#words)
-        * [Pseudowords](#pseudowords)
+    - [Words](#words)
+    - [Pseudowords](#pseudowords)
 - [Creating the list of trials](#creating-the-list-of-trials)
 - [Running the experiment](#running-the-experiment)
 - [Analyzing the results](#analyzing-the-results)
